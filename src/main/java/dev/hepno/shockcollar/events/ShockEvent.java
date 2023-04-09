@@ -10,6 +10,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class ShockEvent implements Listener {
 
@@ -29,14 +32,22 @@ public class ShockEvent implements Listener {
             String duration =  plugin.getConfig().getString("credentials.duration");
             String intensity = plugin.getConfig().getString("credentials.intensity");
 
-
             try {
-                String command = "curl -d '{\"Username\":\"" + username + "\",\"Name\":\"" + name + "\",\"Code\":\"" + code + "\",\"Intensity\":\"" + intensity + "\",\"Duration\":\"" + duration + "\",\"Apikey\":\"" + apikey + "\",\"Op\":\"0\"}' -H 'Content-Type: application/json' https://do.pishock.com/api/apioperate";
-                ProcessBuilder pb = new ProcessBuilder(command.split("\\s+"));
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
+                URL url = new URL("https://do.pishock.com/api/apioperate");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("User-Agent", "Mozilla/5.0");
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String postData = "{\"Username\":\"" + username + "\",\"Name\":\"" + name + "\",\"Code\":\"" + code + "\",\"Intensity\":\"" + intensity + "\",\"Duration\":\"" + duration + "\",\"Apikey\":\"" + apikey + "\",\"Op\":\"0\"}";
+                con.setDoOutput(true);
+                OutputStream os = con.getOutputStream();
+                os.write(postData.getBytes());
+                os.flush();
+                os.close();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
