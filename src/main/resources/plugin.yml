@@ -1,0 +1,4 @@
+name: ShockCollar
+version: '${project.version}'
+main: dev.hepno.shockcollar.ShockCollar
+api-version: 1.19

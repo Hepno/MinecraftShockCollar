@@ -1,0 +1,8 @@
+credentials:
+  username: "username"
+  apikey: "key"
+  code: "code"
+  name: "name"
+settings:
+  duration: 3 #1-15
+  intensity: 20 #1-100
